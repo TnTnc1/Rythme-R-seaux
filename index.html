@@ -3,40 +3,237 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rythme & Réseaux - Le Jeu</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Rythme & Réseaux v2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* --- ESTHÉTIQUE GÉNÉRALE --- */
+        :root {
+            --bg-color: #1a1a2e;
+            --primary-color: #0f3460;
+            --secondary-color: #e94560;
+            --accent-color: #53a8b6;
+            --font-color: #ffffff;
+            --track-color: #16213e;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: var(--font-color);
+            overflow: hidden;
+        }
+
+        #game-container {
+            width: 100%;
+            max-width: 400px;
+            height: 700px;
+            background-color: var(--primary-color);
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            position: relative;
+            overflow: hidden;
+            border: 3px solid var(--accent-color);
+        }
+
+        .screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: opacity 0.5s ease;
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* --- ÉCRAN D'ACCUEIL ET DE FIN --- */
+        #start-screen h1, #end-screen h2 {
+            font-size: 2.8em;
+            font-weight: 800;
+            color: var(--font-color);
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px var(--secondary-color);
+        }
+        #start-screen p, #end-screen p {
+            font-size: 1.1em;
+            max-width: 80%;
+            margin-bottom: 30px;
+        }
+        #final-score {
+            font-size: 5em;
+            font-weight: 800;
+            color: var(--accent-color);
+        }
+
+        button {
+            padding: 15px 40px;
+            font-size: 1.2em;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            background-color: var(--secondary-color);
+            color: var(--font-color);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
+        }
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(233, 69, 96, 0.6);
+        }
+        .screenshot-instruction {
+            margin-top: 20px;
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* --- INTERFACE DE JEU (HUD) --- */
+        #hud {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            background: rgba(0, 0, 0, 0.2);
+            font-weight: 600;
+            z-index: 10;
+        }
+        .hud-item {
+            text-align: center;
+        }
+        .hud-item span:first-child {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        .hud-item span:last-child {
+            font-size: 1.8em;
+            display: block;
+        }
+
+        /* --- PISTE DE JEU ET CIBLE --- */
+        #game-area {
+            position: relative;
+            height: 100%;
+            width: 100%;
+        }
+        #game-track {
+            position: absolute;
+            width: 100%;
+            height: 80px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--track-color);
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+        }
+        #action-button {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 80px;
+            height: 80px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            z-index: 5;
+            cursor: pointer;
+            box-shadow: 0 0 0 5px rgba(255,255,255,0.2), 0 0 20px var(--accent-color);
+            transition: transform 0.1s ease;
+        }
+        #action-button:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        /* --- ICÔNES SVG --- */
+        .icon {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            top: 15px; /* Centré dans la piste de 80px */
+            right: -60px;
+            z-index: 2;
+            animation: slide 3.5s linear;
+        }
+        .icon svg {
+            width: 100%;
+            height: 100%;
+            fill: var(--font-color);
+        }
+        @keyframes slide {
+            from { right: -60px; }
+            to { right: 110%; }
+        }
+
+        /* --- FEEDBACK VISUEL --- */
+        #feedback {
+            position: absolute;
+            top: 35%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 3.5em;
+            font-weight: 800;
+            opacity: 0;
+            pointer-events: none;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        .feedback-anim {
+            animation: fadeUp 0.6s ease-out;
+        }
+        @keyframes fadeUp {
+            from { transform: translate(-50%, 0); opacity: 1; }
+            to { transform: translate(-50%, -60px); opacity: 0; }
+        }
+
+    </style>
 </head>
 <body>
+    <svg width="0" height="0" style="position:absolute">
+        <defs>
+            <symbol id="icon-fb" viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-1.5c-1 0-1.5.5-1.5 1.5V12h3l-.5 3h-2.5v6.8c4.56-.93 8-4.96 8-9.8z"/></symbol>
+            <symbol id="icon-insta" viewBox="0 0 24 24"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8A3.6 3.6 0 0 0 7.6 20h8.8A3.6 3.6 0 0 0 20 16.4V7.6A3.6 3.6 0 0 0 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/></symbol>
+            <symbol id="icon-x" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></symbol>
+            <symbol id="icon-code" viewBox="0 0 24 24"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></symbol>
+        </defs>
+    </svg>
+
     <div id="game-container">
-        <div id="start-screen">
+        <div id="start-screen" class="screen">
             <h1>Rythme & Réseaux</h1>
-            <p>Cliquez sur les icônes au bon moment pour marquer le meilleur score !</p>
-            <button id="start-button">Démarrer</button>
+            <p>Quand une icône passe sur le bouton bleu, CLIQUEZ DESSUS pour marquer des points !</p>
+            <button id="start-button">Jouer !</button>
         </div>
 
-        <div id="game-screen" class="hidden">
+        <div id="game-screen" class="screen hidden">
             <div id="hud">
-                <div class="hud-item">
-                    <span>Score</span>
-                    <span id="score">0</span>
-                </div>
-                <div class="hud-item">
-                    <span>Temps</span>
-                    <span id="timer">60</span>
-                </div>
-                 <div class="hud-item">
-                    <span>Combo</span>
-                    <span id="combo">x1</span>
-                </div>
+                <div class="hud-item"><span>Score</span><span id="score">0</span></div>
+                <div class="hud-item"><span>Temps</span><span id="timer">60</span></div>
+                <div class="hud-item"><span>Combo</span><span id="combo">x1.0</span></div>
             </div>
-            <div id="game-track">
-                <div id="target-zone"></div>
+            <div id="game-area">
+                <div id="game-track"></div>
+                <div id="action-button"></div>
+                <div id="feedback"></div>
             </div>
-            <div id="feedback"></div>
         </div>
         
-        <div id="end-screen" class="hidden">
-            <h2>Temps écoulé !</h2>
+        <div id="end-screen" class="screen hidden">
+            <h2>Terminé !</h2>
             <p>Votre score final est de :</p>
             <span id="final-score">0</span>
             <button id="restart-button">Rejouer</button>
@@ -44,6 +241,136 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const endScreen = document.getElementById('end-screen');
+        const startButton = document.getElementById('start-button');
+        const restartButton = document.getElementById('restart-button');
+        
+        const scoreDisplay = document.getElementById('score');
+        const timerDisplay = document.getElementById('timer');
+        const comboDisplay = document.getElementById('combo');
+        const finalScoreDisplay = document.getElementById('final-score');
+        const feedbackDisplay = document.getElementById('feedback');
+        
+        const gameTrack = document.getElementById('game-track');
+        const actionButton = document.getElementById('action-button');
+
+        let score = 0, timer = 60, combo = 1;
+        let gameInterval, iconInterval, timerInterval;
+        const iconTypes = ['icon-fb', 'icon-insta', 'icon-x', 'icon-code'];
+
+        startButton.addEventListener('click', startGame);
+        restartButton.addEventListener('click', startGame);
+        actionButton.addEventListener('click', handleActionClick);
+
+        function startGame() {
+            score = 0; timer = 60; combo = 1;
+            updateHUD();
+            
+            startScreen.classList.add('hidden');
+            endScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            
+            iconInterval = setTimeout(spawnIcon, 1500);
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            timer--;
+            updateHUD();
+            if (timer <= 0) endGame();
+        }
+        
+        function endGame() {
+            clearTimeout(iconInterval);
+            clearInterval(timerInterval);
+            
+            finalScoreDisplay.textContent = score;
+            gameScreen.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+
+            document.querySelectorAll('.icon').forEach(icon => icon.remove());
+        }
+
+        function updateHUD() {
+            scoreDisplay.textContent = score;
+            timerDisplay.textContent = timer;
+            comboDisplay.textContent = `x${combo.toFixed(1)}`;
+        }
+
+        function spawnIcon() {
+            const iconWrapper = document.createElement('div');
+            iconWrapper.classList.add('icon');
+
+            const randomIconId = iconTypes[Math.floor(Math.random() * iconTypes.length)];
+            iconWrapper.innerHTML = `<svg><use xlink:href="#${randomIconId}"></use></svg>`;
+            
+            gameTrack.appendChild(iconWrapper);
+            
+            setTimeout(() => {
+                if (iconWrapper.parentElement) {
+                    iconWrapper.remove();
+                    showFeedback("Raté", "#e74c3c");
+                    resetCombo();
+                }
+            }, 3500); // Durée de l'animation CSS
+
+            const nextSpawnTime = Math.random() * 1000 + 500 / combo; // Les icônes apparaissent plus vite avec un combo élevé
+            iconInterval = setTimeout(spawnIcon, nextSpawnTime);
+        }
+
+        function handleActionClick() {
+            const allIcons = document.querySelectorAll('.icon');
+            const buttonRect = actionButton.getBoundingClientRect();
+            let hit = false;
+            
+            allIcons.forEach(icon => {
+                const iconRect = icon.getBoundingClientRect();
+
+                if (iconRect.left < buttonRect.right && iconRect.right > buttonRect.left) {
+                    const distanceToCenter = Math.abs((iconRect.left + iconRect.width / 2) - (buttonRect.left + buttonRect.width / 2));
+                    
+                    if (distanceToCenter < 20) { // Parfait
+                        updateScore(150, 0.2, "Parfait !", "#2ecc71");
+                    } else if (distanceToCenter < 40) { // Bien
+                        updateScore(50, 0.1, "Bien", "#f1c40f");
+                    } else { return; }
+
+                    hit = true;
+                    icon.remove();
+                }
+            });
+
+            if (!hit) {
+                updateScore(-25, 0, "Oups...", "#e74c3c");
+                resetCombo();
+            }
+        }
+        
+        function updateScore(points, comboIncrease, feedbackText, feedbackColor) {
+            score += Math.floor(points * combo);
+            if (score < 0) score = 0;
+            combo += comboIncrease;
+            showFeedback(feedbackText, feedbackColor);
+            updateHUD();
+        }
+
+        function resetCombo() {
+            combo = 1;
+            updateHUD();
+        }
+        
+        function showFeedback(text, color) {
+            feedbackDisplay.textContent = text;
+            feedbackDisplay.style.color = color;
+            feedbackDisplay.classList.remove('feedback-anim');
+            void feedbackDisplay.offsetWidth;
+            feedbackDisplay.classList.add('feedback-anim');
+        }
+    });
+    </script>
 </body>
 </html>
