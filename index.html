@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rythme & Réseaux - Le Jeu</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="start-screen">
+            <h1>Rythme & Réseaux</h1>
+            <p>Cliquez sur les icônes au bon moment pour marquer le meilleur score !</p>
+            <button id="start-button">Démarrer</button>
+        </div>
+
+        <div id="game-screen" class="hidden">
+            <div id="hud">
+                <div class="hud-item">
+                    <span>Score</span>
+                    <span id="score">0</span>
+                </div>
+                <div class="hud-item">
+                    <span>Temps</span>
+                    <span id="timer">60</span>
+                </div>
+                 <div class="hud-item">
+                    <span>Combo</span>
+                    <span id="combo">x1</span>
+                </div>
+            </div>
+            <div id="game-track">
+                <div id="target-zone"></div>
+            </div>
+            <div id="feedback"></div>
+        </div>
+        
+        <div id="end-screen" class="hidden">
+            <h2>Temps écoulé !</h2>
+            <p>Votre score final est de :</p>
+            <span id="final-score">0</span>
+            <button id="restart-button">Rejouer</button>
+            <p class="screenshot-instruction">Faites une capture d'écran et postez-la en commentaire !</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
